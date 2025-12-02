@@ -1,4 +1,4 @@
-# 🪐 PlanetInfoSOAP – Proyecto de Integración SOAP con Spring Boot & Spring Integration
+# 🪐 Proyecto de Integración SOAP con Spring Boot & Spring Integration
 
 Este proyecto es un ejemplo funcional que demuestra cómo **exponer un servicio SOAP**, consumirlo internamente desde Spring usando **Spring Integration**, y finalmente mostrar los datos procesados con **Thymeleaf** en una interfaz web amigable.
 
