@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Explorador de Planetas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Fuente -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-main: #030616;
+            --bg-card: #050b1f;
+            --bg-card-soft: #081024;
+            --accent: #1aa3ff;
+            --accent-soft: #1a6bff;
+            --text-main: #f9fbff;
+            --text-soft: #a3b4d8;
+            --border-soft: #1a2238;
+            --danger: #ff4d6a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #071531 0, #02040b 45%, #010109 100%);
+            color: var(--text-main);
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 16px 40px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: clamp(2.4rem, 4vw, 3.4rem);
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: #11b2ff;
+            margin: 0 0 4px;
+            text-shadow: 0 0 18px rgba(17, 178, 255, 0.6);
+        }
+
+        .page-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-soft);
+            margin: 0;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        @media (max-width: 840px) {
+            .layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        /* Sidebar */
+        .panel {
+            background: rgba(5, 12, 30, 0.96);
+            border-radius: 18px;
+            padding: 18px 16px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .planet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .planet-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            background: rgba(8, 16, 40, 0.9);
+            border: 1px solid transparent;
+            transition: all 0.18s ease-out;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .planet-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .planet-icon {
+            font-size: 1.1rem;
+        }
+
+        .planet-name {
+            font-weight: 500;
+        }
+
+        .planet-arrow {
+            font-size: 0.85rem;
+            color: var(--text-soft);
+        }
+
+        .planet-item:hover {
+            border-color: rgba(26, 163, 255, 0.7);
+            background: radial-gradient(circle at top left, rgba(49, 149, 255, 0.28), rgba(8, 16, 40, 0.9));
+            transform: translateY(-1px);
+        }
+
+        .planet-item.active {
+            background: linear-gradient(90deg, #1a6bff, #11b2ff);
+            box-shadow: 0 10px 30px rgba(0, 140, 255, 0.7);
+            border-color: transparent;
+        }
+
+        .planet-item.active .planet-arrow {
+            color: #eaf6ff;
+        }
+
+        /* Main card */
+        .card-main {
+            background: radial-gradient(circle at top left, #0b1430, #050b1f);
+            border-radius: 22px;
+            padding: 24px 22px 22px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(26, 34, 56, 0.85);
+            padding-bottom: 14px;
+            margin-bottom: 4px;
+        }
+
+        .card-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .planet-symbol {
+            font-size: 2rem;
+        }
+
+        .planet-title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        #planet-name {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        #planet-tagline {
+            font-size: 0.85rem;
+            color: var(--text-soft);
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(58, 188, 255, 0.7);
+            background: radial-gradient(circle at top left,
+            rgba(57, 167, 255, 0.26),
+            rgba(4, 13, 32, 0.9));
+            color: #e3f5ff;
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 2px;
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #070f22, #05091a);
+            border-radius: 14px;
+            padding: 14px 14px 12px;
+            border: 1px solid rgba(25, 36, 66, 0.95);
+        }
+
+        .stat-label {
+            font-size: 0.76rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #5dbcff;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .stat-sub {
+            font-size: 0.85rem;
+            color: var(--text-soft);
+        }
+
+        /* Description */
+        .about-card {
+            margin-top: 10px;
+            padding: 14px 14px 13px;
+            border-radius: 16px;
+            background: linear-gradient(135deg,
+            rgba(19, 104, 210, 0.38),
+            rgba(6, 16, 40, 0.95));
+            border: 1px solid rgba(37, 149, 255, 0.75);
+        }
+
+        .about-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            color: #bde3ff;
+        }
+
+        #planet-description {
+            font-size: 0.9rem;
+            color: #e9f3ff;
+        }
+
+        /* Status / error */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            font-size: 0.8rem;
+            color: var(--text-soft);
+        }
+
+        #status-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: #1cff8a;
+            box-shadow: 0 0 10px rgba(29, 255, 153, 0.8);
+        }
+
+        #status-text.loading .dot {
+            background: #ffd95b;
+            box-shadow: 0 0 10px rgba(255, 227, 115, 0.8);
+        }
+
+        #status-text.error .dot {
+            background: var(--danger);
+            box-shadow: 0 0 10px rgba(255, 99, 132, 0.8);
+        }
+
+        #status-message {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <header class="page-header">
+        <h1 class="page-title">Explorador de Planetas</h1>
+        <p class="page-subtitle">
+            Descubre fascinantes datos sobre nuestro sistema solar usando un servicio SOAP con Spring Integration.
+        </p>
+    </header>
+
+    <main class="layout">
+        <!-- Sidebar -->
+        <aside class="panel">
+            <h2 class="panel-title">Planetas</h2>
+            <ul class="planet-list" id="planet-list">
+                <!-- Items generados por JS -->
+            </ul>
+        </aside>
+
+        <!-- Main card -->
+        <section class="card-main">
+            <header class="card-header">
+                <div class="card-header-left">
+                    <div class="planet-symbol" id="planet-symbol">☿</div>
+                    <div class="planet-title">
+                        <div id="planet-name">Mercurio</div>
+                        <div id="planet-tagline">El más cercano al Sol</div>
+                    </div>
+                </div>
+                <div class="tag">Datos obtenidos vía SOAP</div>
+            </header>
+
+            <section class="stats-grid">
+                <article class="stat-card">
+                    <div class="stat-label">DIÁMETRO</div>
+                    <div class="stat-value" id="stat-diameter">—</div>
+                    <div class="stat-sub">Kilómetros</div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-label">DISTANCIA AL SOL</div>
+                    <div class="stat-value" id="stat-distance">—</div>
+                    <div class="stat-sub">Millones de km</div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-label">PERÍODO ORBITAL</div>
+                    <div class="stat-value" id="stat-orbit">—</div>
+                    <div class="stat-sub">Días</div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-label">TEMPERATURA</div>
+                    <div class="stat-value" id="stat-temp">—</div>
+                    <div class="stat-sub">Grados Celsius</div>
+                </article>
+            </section>
+
+            <section class="about-card">
+                <div class="about-title">ACERCA DE</div>
+                <p id="planet-description">
+                    Selecciona un planeta en la barra lateral para ver la información detallada.
+                </p>
+            </section>
+
+            <div class="status-bar">
+                <div id="status-text">
+                    <span class="dot"></span>
+                    <span id="status-message">Listo para explorar.</span>
+                </div>
+                <div style="opacity: 0.8; font-size: 0.78rem;">
+                    Endpoint: <code>/planet?name=&lt;planeta&gt;</code>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    // Config de planetas (icono, tagline, nombre que enviamos al backend)
+    const PLANETS = [
+        { name: "Mercurio", symbol: "☿", tagline: "El más cercano al Sol" },
+        { name: "Venus", symbol: "♀", tagline: "La gemela de la Tierra" },
+        { name: "Tierra", symbol: "🌍", tagline: "Nuestro hogar" },
+        { name: "Marte", symbol: "♂", tagline: "El planeta rojo" },
+        { name: "Júpiter", symbol: "♃", tagline: "El gigante gaseoso" },
+        { name: "Saturno", symbol: "♄", tagline: "El de los anillos" },
+        { name: "Urano", symbol: "♅", tagline: "Gigante de hielo" },
+        { name: "Neptuno", symbol: "♆", tagline: "El más lejano" }
+    ];
+
+    const planetListEl = document.getElementById("planet-list");
+
+    const nameEl = document.getElementById("planet-name");
+    const taglineEl = document.getElementById("planet-tagline");
+    const symbolEl = document.getElementById("planet-symbol");
+    const diameterEl = document.getElementById("stat-diameter");
+    const distanceEl = document.getElementById("stat-distance");
+    const orbitEl = document.getElementById("stat-orbit");
+    const tempEl = document.getElementById("stat-temp");
+    const descEl = document.getElementById("planet-description");
+    const statusTextEl = document.getElementById("status-text");
+    const statusMsgEl = document.getElementById("status-message");
+
+    function setStatus(type, message) {
+        statusTextEl.classList.remove("loading", "error");
+        if (type === "loading") {
+            statusTextEl.classList.add("loading");
+        } else if (type === "error") {
+            statusTextEl.classList.add("error");
+        }
+        statusMsgEl.textContent = message;
+    }
+
+    function formatNumber(value) {
+        if (value === 0 || value === null || value === undefined) return "—";
+        return new Intl.NumberFormat("es-SV").format(value);
+    }
+
+    function renderPlanetList(activeName) {
+        planetListEl.innerHTML = "";
+        PLANETS.forEach(p => {
+            const li = document.createElement("li");
+            li.className = "planet-item" + (p.name.toLowerCase() === activeName.toLowerCase() ? " active" : "");
+            li.dataset.planet = p.name;
+
+            li.innerHTML = `
+                <div class="planet-item-left">
+                    <span class="planet-icon">${p.symbol}</span>
+                    <span class="planet-name">${p.name}</span>
+                </div>
+                <span class="planet-arrow">›</span>
+            `;
+
+            li.addEventListener("click", () => {
+                loadPlanet(p.name);
+            });
+
+            planetListEl.appendChild(li);
+        });
+    }
+
+    async function loadPlanet(planetName) {
+        renderPlanetList(planetName);
+        const planetConfig = PLANETS.find(p => p.name.toLowerCase() === planetName.toLowerCase()) ?? PLANETS[0];
+
+        setStatus("loading", `Consultando servicio SOAP para ${planetName}...`);
+
+        try {
+            const response = await fetch(`/planet?name=${encodeURIComponent(planetName)}`);
+            if (!response.ok) {
+                throw new Error("Error al llamar al endpoint /planet");
+            }
+
+            const data = await response.json();
+
+            // Encabezado
+            symbolEl.textContent = planetConfig.symbol;
+            nameEl.textContent = data.name || planetConfig.name;
+            taglineEl.textContent = planetConfig.tagline;
+
+            // Stats
+            diameterEl.textContent = data.diameter ? `${formatNumber(data.diameter)} km` : "—";
+            distanceEl.textContent = data.distanceFromSun ? `${formatNumber(data.distanceFromSun)} M km` : "—";
+            orbitEl.textContent = data.orbitalPeriod ? `${formatNumber(data.orbitalPeriod)} días` : "—";
+            tempEl.textContent = (data.temperature || data.temperature === 0)
+                ? `${data.temperature}°C`
+                : "—";
+
+            // Descripción
+            descEl.textContent = data.description || "No hay información disponible para este planeta.";
+
+            setStatus("ok", "Datos recibidos correctamente desde el servicio SOAP.");
+
+        } catch (err) {
+            console.error(err);
+            setStatus("error", "Ocurrió un error al consultar el servicio SOAP.");
+        }
+    }
+
+    // Inicializar: empezamos con Mercurio (como en tu diseño)
+    document.addEventListener("DOMContentLoaded", () => {
+        renderPlanetList("Mercurio");
+        loadPlanet("Mercurio");
+    });
+</script>
+</body>
+</html>

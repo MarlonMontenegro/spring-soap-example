@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:tns="http://udb.edu.sv/planetinfo"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    targetNamespace="http://udb.edu.sv/planetinfo"
+    name="PlanetInfoService">
+
+    <!-- Tipos XML usados por el servicio -->
+    <types>
+        <xsd:schema targetNamespace="http://udb.edu.sv/planetinfo">
+            <xsd:element name="PlanetRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="name" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="PlanetResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="name" type="xsd:string"/>
+                        <xsd:element name="radius" type="xsd:double"/>
+                        <xsd:element name="distanceFromSun" type="xsd:double"/>
+                        <xsd:element name="numberOfMoons" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+
+    <!-- Mensajes de entrada y salida -->
+    <message name="PlanetInfoRequest">
+        <part name="parameters" element="tns:PlanetRequest"/>
+    </message>
+
+    <message name="PlanetInfoResponse">
+        <part name="parameters" element="tns:PlanetResponse"/>
+    </message>
+
+    <!-- Operación en el portType -->
+    <portType name="PlanetInfoPortType">
+        <operation name="getPlanetInfo">
+            <input message="tns:PlanetInfoRequest"/>
+            <output message="tns:PlanetInfoResponse"/>
+        </operation>
+    </portType>
+
+    <!-- Enlace SOAP (binding) -->
+    <binding name="PlanetInfoSoapBinding" type="tns:PlanetInfoPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="getPlanetInfo">
+            <soap:operation soapAction="http://udb.edu.sv/planetinfo/getPlanetInfo" />
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <!-- Service: URL del endpoint SOAP (simulada aquí) -->
+    <service name="PlanetInfoService">
+        <documentation>Servicio SOAP para consultar información de planetas.</documentation>
+        <port name="PlanetInfoPort" binding="tns:PlanetInfoSoapBinding">
+            <soap:address location="http://localhost:8080/ws/planetinfo"/>
+        </port>
+    </service>
+
+</definitions>

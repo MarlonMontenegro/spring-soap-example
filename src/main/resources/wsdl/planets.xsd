@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://udb.edu.sv/planetinfo"
+            xmlns="http://udb.edu.sv/planetinfo"
+            elementFormDefault="qualified">
+
+    <xsd:element name="PlanetRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="name" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="PlanetResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="name" type="xsd:string"/>
+                <xsd:element name="diameter" type="xsd:double"/>
+                <xsd:element name="distanceFromSun" type="xsd:double"/>
+                <xsd:element name="orbitalPeriod" type="xsd:double"/>
+                <xsd:element name="temperature" type="xsd:double"/>
+                <xsd:element name="description" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
