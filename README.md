@@ -25,27 +25,8 @@ El sistema permite consultar información detallada sobre los planetas del siste
 
 ## 📁 Arquitectura del proyecto
 
-src/main/java/sv/edu/udb/PlanetInfoSOAP
-│
-├── config
-│   ├── WebServiceConfig.java              # Expone WSDL y registra endpoint SOAP
-│   └── PlanetIntegrationConfig.java       # Canal + ServiceActivator (Integration)
-│
-├── controller
-│   └── WebController.java                 # Controlador Thymeleaf
-│
-├── integration
-│   ├── PlanetInfoGateway.java             # Puerta de entrada a Integration
-│   ├── PlanetSoapClient.java              # Interfaz del cliente SOAP
-│   └── PlanetSoapClientImpl.java          # Cliente SOAP usando WebServiceTemplate
-│
-├── model
-│   └── PlanetInfo.java                    # Modelo enviado al frontend
-│
-└── soap
-    ├── PlanetRequest.java
-    ├── PlanetResponse.java
-    └── PlanetInfoEndpoint.java            # Lógica real del servicio SOAP
+<img width="659" height="458" alt="image" src="https://github.com/user-attachments/assets/3ea788b4-686b-40bc-9591-8654819f1e72" />
+
 
     
 ---
